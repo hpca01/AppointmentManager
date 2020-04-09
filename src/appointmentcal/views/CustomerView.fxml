@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane id="AnchorPane" prefHeight="541.0" prefWidth="839.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <MenuBar prefHeight="25.0" prefWidth="839.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <menus>
+          <Menu mnemonicParsing="false" text="File">
+            <items>
+              <MenuItem fx:id="logFileMenuItem" mnemonicParsing="false" text="Open Log File" />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="Reporting">
+            <items>
+                  <MenuItem fx:id="allCustomerAppt" mnemonicParsing="false" text="All Customer Appointments" />
+              <MenuItem fx:id="reportingApptByMonth" mnemonicParsing="false" text="Appointments by Month" />
+                  <MenuItem fx:id="reportingSchedule" mnemonicParsing="false" text="Schedule" />
+            </items>
+          </Menu>
+          <Menu mnemonicParsing="false" text="Appointment">
+            <items>
+                  <MenuItem fx:id="appointmentsView" mnemonicParsing="false" text="View Appointments" />
+            </items>
+          </Menu>
+            <Menu mnemonicParsing="false" text="Help">
+               <items>
+                  <MenuItem fx:id="helpAbout" mnemonicParsing="false" text="About" />
+               </items>
+            </Menu>
+        </menus>
+      </MenuBar>
+      <TableView fx:id="customerTable" layoutY="25.0" prefHeight="516.0" prefWidth="840.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="25.0">
+        <columns>
+          <TableColumn fx:id="customerName" prefWidth="201.0" text="Customer Name" />
+            <TableColumn fx:id="customerAddress" minWidth="0.0" prefWidth="290.0" text="Address" />
+          <TableColumn fx:id="customerCity" minWidth="0.0" prefWidth="165.0" text="City" />
+            <TableColumn fx:id="customerCountry" minWidth="0.0" prefWidth="165.0" text="Country" />
+        </columns>
+      </TableView>
+   </children>
+</AnchorPane>
