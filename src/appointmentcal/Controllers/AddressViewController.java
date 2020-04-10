@@ -56,6 +56,9 @@ public class AddressViewController extends BaseController implements Initializab
 
     @FXML
     void save(ActionEvent event) {
+        if (!validateForm()){
+            return ;
+        }
         String selectedItem = cityCombo.getSelectionModel().getSelectedItem();
         FilteredList<City> filtered = manager.getCities().filtered(city->city.getCity().equals(selectedItem));
         int cityId = filtered.get(0).getCityId();
@@ -77,6 +80,9 @@ public class AddressViewController extends BaseController implements Initializab
 
     @FXML
     void saveNew(ActionEvent event) {
+        if(!validateForm()){
+            return ;
+        }
         Address newAddress = new Address();
         String selectedItem = cityCombo.getSelectionModel().getSelectedItem();
         FilteredList<City> filtered = manager.getCities().filtered(city->city.getCity().equals(selectedItem));
@@ -133,4 +139,11 @@ public class AddressViewController extends BaseController implements Initializab
         return SCREEN_NAME;
     }
     
+    public boolean validateForm(){
+        if((address.getText().isEmpty()) || phoneNumber.getText().isEmpty() || zipcode.getText().isEmpty()){
+            viewFactory.raiseInfoAlert(SCREEN_NAME, "Invalid Data", "Address, phone number and zip code are required.");
+            return false;
+        }
+        return true;
+    }
 }

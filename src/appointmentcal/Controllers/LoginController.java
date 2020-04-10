@@ -77,11 +77,16 @@ public class LoginController extends BaseController implements Initializable{
         return false;
     }
     
+    Locale  getLocale(){
+        Locale currentLocale = Locale.getDefault();
+        return currentLocale;
+    }
+    
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         String[] languages = "English,Spanish".toString().split(",");
         langCombo.setItems(FXCollections.observableArrayList(languages));
-        langCombo.getSelectionModel().select("English");//default = english
+        
         
         langCombo.getSelectionModel().selectedItemProperty().addListener((options, oldValue, newValue)->{
             if (((String)newValue).equals("Spanish") ){
@@ -93,9 +98,20 @@ public class LoginController extends BaseController implements Initializable{
             }
         });
         
-        ResourceBundle language = ResourceBundle.getBundle("appointmentcal.views.resources.lang", new Locale("en", "EN"));
-        this.currentLanguage = language;
-        
+        if (getLocale().getDisplayLanguage() == "English"){
+            ResourceBundle language = ResourceBundle.getBundle("appointmentcal.views.resources.lang", new Locale("en", "EN"));
+            this.currentLanguage = language;
+            langCombo.getSelectionModel().select("English");
+        }else if(getLocale().getDisplayLanguage() == "Spanish"){
+            ResourceBundle language = ResourceBundle.getBundle("appointmentcal.views.resources.lang", new Locale("es", "ES"));
+            this.currentLanguage = language;
+            langCombo.getSelectionModel().select("Spanish");
+        }else{
+            //last case scenario == english
+            ResourceBundle language = ResourceBundle.getBundle("appointmentcal.views.resources.lang", new Locale("en", "EN"));
+            this.currentLanguage = language;
+            langCombo.getSelectionModel().select("English");
+        }
     }    
 
     @Override

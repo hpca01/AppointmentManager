@@ -60,11 +60,11 @@ public class CustomerEditViewController extends BaseController implements Initia
     @FXML
     void delete(ActionEvent event) {
         boolean proceed = viewFactory.raiseWarningAlertProceed("Delete Warning", "Attention", "Deleting this customer will delete all associated records(such as appointments). Would you like to proceed?");
-        if (proceed){
+        if (proceed) {
             //yes delete
             Customer currentCustomer = manager.getCurrentCustomer();
-            FilteredList<Appointment> appointmentsByCustomer = manager.getAppointments().filtered(appointment->appointment.getCustomerId() == currentCustomer.getCustomerId());
-            for(Appointment app: appointmentsByCustomer){
+            FilteredList<Appointment> appointmentsByCustomer = manager.getAppointments().filtered(appointment -> appointment.getCustomerId() == currentCustomer.getCustomerId());
+            for (Appointment app : appointmentsByCustomer) {
                 app.delete();
                 manager.getAppointments().remove(app);
             }
@@ -82,38 +82,52 @@ public class CustomerEditViewController extends BaseController implements Initia
     @FXML
     void save(ActionEvent event) {
 
-        Customer currentCustomer = manager.getCurrentCustomer();
-        currentCustomer.setCustomerName(customerName.getText());
-        currentCustomer.setAddressId(addressCombo.getSelectionModel().getSelectedItem().getAddressId());
-        currentCustomer.setActive(activeConverter());
+        if (validateForm()) {
+            Customer currentCustomer = manager.getCurrentCustomer();
+            currentCustomer.setCustomerName(customerName.getText());
+            currentCustomer.setAddressId(addressCombo.getSelectionModel().getSelectedItem().getAddressId());
+            currentCustomer.setActive(activeConverter());
 
-        currentCustomer.update();
-        
-        returnToCustomersTable();
+            currentCustomer.update();
+
+            returnToCustomersTable();
+        }
 
     }
 
-    public void returnToCustomersTable(){
-        Stage stage = (Stage)activeSwitch.getScene().getWindow();
+    public boolean validateForm() {
+        String name = customerName.getText();
+        Address address = addressCombo.getSelectionModel().getSelectedItem();
+        if ((name.isEmpty()) || (address == null)) {
+            viewFactory.raiseInfoAlert(SCREEN_NAME, "Invalid Data", "Please fill out customer name and select address to associate with customer.");
+            return false;
+        }
+        return true;
+    }
+
+    public void returnToCustomersTable() {
+        Stage stage = (Stage) activeSwitch.getScene().getWindow();
         viewFactory.showCustomers();
         viewFactory.closeStage(stage);
     }
-    
+
     @FXML
     void saveNew(ActionEvent event) {
-        Customer newCustomer = new Customer();
-        newCustomer.setActive(activeConverter());
-        newCustomer.setCustomerName(customerName.getText());
-        newCustomer.setAddressId(addressCombo.getSelectionModel().getSelectedItem().getAddressId());
-        newCustomer.setCreatedBy(manager.getCurrentUser().getUserName());
-        newCustomer.setCreateDate(Utils.currentDateTime());
-        newCustomer.setLastUpdateBy(manager.getCurrentUser().getUserName());
+        if (validateForm()) {
+            Customer newCustomer = new Customer();
+            newCustomer.setActive(activeConverter());
+            newCustomer.setCustomerName(customerName.getText());
+            newCustomer.setAddressId(addressCombo.getSelectionModel().getSelectedItem().getAddressId());
+            newCustomer.setCreatedBy(manager.getCurrentUser().getUserName());
+            newCustomer.setCreateDate(Utils.currentDateTime());
+            newCustomer.setLastUpdateBy(manager.getCurrentUser().getUserName());
 
-        newCustomer.create();
-        newCustomer.refresh();
-        
-        manager.getCustomers().add(newCustomer);
-        returnToCustomersTable();
+            newCustomer.create();
+            newCustomer.refresh();
+
+            manager.getCustomers().add(newCustomer);
+            returnToCustomersTable();
+        }
     }
 
     /**

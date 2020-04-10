@@ -120,9 +120,11 @@ public class CustomerViewController extends BaseController implements Initializa
     }
     
     private void checkAppointments(){
-        ZonedDateTime now = LocalDateTime.now().atZone(ZoneId.systemDefault()).withZoneSameInstant(ZoneId.of("UTC"));
+        ZonedDateTime now = LocalDateTime.now().atZone(ZoneId.systemDefault());
         //lambda - to check if any appointment start times are within 15 minutes.
-        Stream<Appointment> filter = manager.getAppointments().stream().filter(appt->appt.getStart().toLocalDateTime().atZone(ZoneId.systemDefault()).isBefore(now.plusMinutes(15)));
+        Stream<Appointment> filter = manager.getAppointments().stream().filter(appt->{
+            return (appt.getStart().toLocalDateTime().isAfter(now.toLocalDateTime())) && (appt.getStart().toLocalDateTime().isBefore(now.toLocalDateTime().plusMinutes(15)));
+        });
         if (filter.findFirst().isPresent()){
             viewFactory.raiseInfoAlert("Appointment Alert", "Appointment within 15 minutes", "There is an appointment scheduled that will occur within 15 minutes");
         }

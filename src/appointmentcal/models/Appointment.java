@@ -177,6 +177,11 @@ public class Appointment implements FromQuery<Appointment>, Comparable<Appointme
         this.lastUpdateBy.set(lastUpdateBy);
     }
 
+    @Override
+    public String toString() {
+        return "Appointment{" + "appointmentId=" + appointmentId + ", customerId=" + customerId + ", userId=" + userId + ", title=" + title + ", description=" + description + ", location=" + location + ", contact=" + contact + ", type=" + type + ", url=" + url + ", start=" + start + ", end=" + end + ", createDate=" + createDate + ", createdBy=" + createdBy + ", lastUpdate=" + lastUpdate + ", lastUpdateBy=" + lastUpdateBy + '}';
+    }
+
     public static ArrayList<Appointment> getAllAppointments() {
         ArrayList appointments = new ArrayList<Appointment>();
 
