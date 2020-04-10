@@ -98,11 +98,11 @@ public class LoginController extends BaseController implements Initializable{
             }
         });
         
-        if (getLocale().getDisplayLanguage() == "English"){
+        if (getLocale().getDisplayLanguage(Locale.ENGLISH) == "English"){
             ResourceBundle language = ResourceBundle.getBundle("appointmentcal.views.resources.lang", new Locale("en", "EN"));
             this.currentLanguage = language;
             langCombo.getSelectionModel().select("English");
-        }else if(getLocale().getDisplayLanguage() == "Spanish"){
+        }else if(getLocale().getDisplayLanguage(Locale.ENGLISH) == "Spanish"){
             ResourceBundle language = ResourceBundle.getBundle("appointmentcal.views.resources.lang", new Locale("es", "ES"));
             this.currentLanguage = language;
             langCombo.getSelectionModel().select("Spanish");

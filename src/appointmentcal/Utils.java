@@ -5,6 +5,7 @@
  */
 package appointmentcal;
 
+import appointmentcal.models.Appointment;
 import appointmentcal.models.FromQuery;
 import java.sql.Timestamp;
 import java.time.LocalDate;
@@ -14,6 +15,8 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.Calendar;
 import java.util.Optional;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.scene.control.ComboBox;
 
 /**
@@ -63,5 +66,59 @@ public class Utils {
 
     public static Timestamp currentDateTime() {
         return Timestamp.from(ZonedDateTime.now().toInstant());
+    }
+    
+    public static boolean isOverLapping(LocalDateTime startCurrentAppt, LocalDateTime endCurrentAppt, ObservableList<Appointment> appointments){
+        LocalDate todayDate = startCurrentAppt.toLocalDate();
+        LocalDateTime startDateTime = LocalDateTime.of(todayDate, LocalTime.MIN);
+        LocalDateTime endDateTime = LocalDateTime.of(todayDate, LocalTime.MAX);
+        //get appointments for today
+        FilteredList<Appointment> todaysAppointments = appointments.filtered(appt->appt.getStart().toLocalDateTime().isAfter(startDateTime) && appt.getEnd().toLocalDateTime().isBefore(endDateTime));
+        
+        //first get all the appointments after the current start time and check to see if the current end time overlaps with any of their start time
+        FilteredList<Appointment> appointmentsAfterStart = todaysAppointments.filtered(appt -> appt.getStart().toLocalDateTime().isAfter(startCurrentAppt));
+        //check to see if all the appointments after the current start time have a start time before the current appointment's endtime if so return true
+        FilteredList<Appointment> appointmentsOverlappingStart = appointmentsAfterStart.filtered(appt->appt.getStart().toLocalDateTime().isBefore(endCurrentAppt));
+        if (appointmentsOverlappingStart.size() > 0) return true;
+        
+        //get all the appointments BEFORE the current end time and check to see if the current start time overlaps with any of their end time
+        FilteredList<Appointment> appointmentsBeforeEnd = todaysAppointments.filtered(appt->appt.getEnd().toLocalDateTime().isBefore(endCurrentAppt));
+        //check to see if all the appointments BEFORE the current end time have an end time after the current appointment's start time if so return true
+        FilteredList<Appointment> appointmentsOverlappingEnd = appointmentsBeforeEnd.filtered(appt->appt.getEnd().toLocalDateTime().isAfter(startCurrentAppt));
+        
+        if (appointmentsOverlappingEnd.size()>0) return true;
+        return false;
+    }
+    
+    public static boolean isOverLapping(LocalDateTime startCurrentAppt, LocalDateTime endCurrentAppt, ObservableList<Appointment> appointments, Appointment currentAppointment){
+        //remove current appointment from the equation first
+        appointments.remove(currentAppointment);
+        
+        LocalDate todayDate = startCurrentAppt.toLocalDate();
+        LocalDateTime startDateTime = LocalDateTime.of(todayDate, LocalTime.MIN);
+        LocalDateTime endDateTime = LocalDateTime.of(todayDate, LocalTime.MAX);
+        //get appointments for today
+        FilteredList<Appointment> todaysAppointments = appointments.filtered(appt->appt.getStart().toLocalDateTime().isAfter(startDateTime) && appt.getEnd().toLocalDateTime().isBefore(endDateTime));
+        
+        
+        //first get all the appointments after the current start time and check to see if the current end time overlaps with any of their start time
+        FilteredList<Appointment> appointmentsAfterStart = todaysAppointments.filtered(appt -> appt.getStart().toLocalDateTime().isAfter(startCurrentAppt));
+        //check to see if all the appointments after the current start time have a start time before the current appointment's endtime if so return true
+        FilteredList<Appointment> appointmentsOverlappingStart = appointmentsAfterStart.filtered(appt->appt.getStart().toLocalDateTime().isBefore(endCurrentAppt));
+        if (appointmentsOverlappingStart.size() > 0){
+            appointments.add(currentAppointment);
+            return true;
+        }
+        //get all the appointments BEFORE the current end time and check to see if the current start time overlaps with any of their end time
+        FilteredList<Appointment> appointmentsBeforeEnd = todaysAppointments.filtered(appt->appt.getEnd().toLocalDateTime().isBefore(endCurrentAppt));
+        //check to see if all the appointments BEFORE the current end time have an end time before the current appointment's start time if so return true
+        FilteredList<Appointment> appointmentsOverlappingEnd = appointmentsBeforeEnd.filtered(appt->appt.getEnd().toLocalDateTime().isAfter(startCurrentAppt));
+        if (appointmentsOverlappingEnd.size()>0) {
+            appointments.add(currentAppointment);
+            return true;
+        }
+        //put it back in
+        appointments.add(currentAppointment);
+        return false;
     }
 }

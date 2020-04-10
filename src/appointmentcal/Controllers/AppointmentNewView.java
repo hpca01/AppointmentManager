@@ -139,7 +139,7 @@ public class AppointmentNewView extends BaseController implements Initializable{
 
     @FXML
     void saveNew(ActionEvent event) {
-        if(validateForm()){
+        if(validateForm()&&newNotOverlapping()){
             //save new
             Appointment newAppointment = new Appointment();
             newAppointment.setTitle(title.getText().trim());
@@ -172,7 +172,16 @@ public class AppointmentNewView extends BaseController implements Initializable{
             }
         }
     }
-
+    boolean newNotOverlapping(){
+        LocalDateTime startTime = Utils.buildDateTime(startDate.getValue(), startHours.valueProperty().intValue(), startMinutes.valueProperty().intValue());
+        LocalDateTime endTime = Utils.buildDateTime(endDate.getValue(), endHours.valueProperty().intValue(), endMinutes.valueProperty().intValue());
+        if (Utils.isOverLapping(startTime, endTime, manager.getAppointments())){
+            viewFactory.raiseInfoAlert("Appointment Validation", "Overlapping Appointments", "Please ensure that you do not overlap start/end times with other existing appointments");
+            return false;
+        }
+        return true;
+    }
+    
     @Override
     public String getScreenName() {
         return SCREEN_NAME;
