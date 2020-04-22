@@ -19,6 +19,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 import java.util.Optional;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -181,6 +182,19 @@ public class AppointmentManager {
     public void refreshCountries(){
         Platform.runLater(()->{
             this.countries.setAll(AppointmentManager.getAllCountries());
+        });
+    }
+    public void refreshAppointments(List<Appointment> arraylist){
+        Platform.runLater(()->{
+            AppointmentManager.getAllAppointments().addListener(new ListChangeListener<Appointment>(){
+                @Override
+                public void onChanged(ListChangeListener.Change<? extends Appointment> c) {
+                    while(c.next()){
+                        arraylist.clear();
+                        arraylist.addAll(c.getAddedSubList());
+                    }
+                }
+            });
         });
     }
     public void refreshAppointments(){

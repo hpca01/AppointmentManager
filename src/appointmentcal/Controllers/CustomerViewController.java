@@ -25,6 +25,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.List;
 import java.util.ResourceBundle;
+import java.util.function.Predicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Stream;
@@ -32,6 +33,7 @@ import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.ListChangeListener;
 import javafx.collections.transformation.FilteredList;
+import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
@@ -39,6 +41,7 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
@@ -55,7 +58,7 @@ public class CustomerViewController extends BaseController implements Initializa
     
     private final String SCREEN_NAME = "Customers";
     
-     @FXML
+    @FXML
     private MenuItem logFileMenuItem; //todo - need to add an actions
 
     @FXML
@@ -87,6 +90,13 @@ public class CustomerViewController extends BaseController implements Initializa
 
     @FXML
     private TableColumn<Customer, String> customerCountry;
+    
+    @FXML
+    private TextField searchBox;
+    
+    FilteredList<Customer> customers;
+    
+    private SimpleStringProperty search = new SimpleStringProperty();
 
     public CustomerViewController(String fxmlStringName, ViewFactory viewFactory, AppointmentManager manager) {
         super(fxmlStringName, viewFactory, manager);
@@ -105,6 +115,11 @@ public class CustomerViewController extends BaseController implements Initializa
         setupLoggingMenuItem();
         setupReporting();
         checkAppointments();
+        setupSearch();
+    }
+    
+    private void setupSearch(){
+        searchBox.textProperty().bindBidirectional(search);
     }
     
     private void setupLoggingMenuItem(){
@@ -232,10 +247,20 @@ public class CustomerViewController extends BaseController implements Initializa
             FilteredList<Country> filteredCountry = manager.getCountries().filtered(country->country.getCountryId() == filteredCity.get(0).getCountryId());            
             return new SimpleStringProperty(filteredCountry.get(0).getCountry());
         });
-                
-        customerTable.setItems(manager.getCustomers());
         
-    }    
+        customers = new FilteredList<>(manager.getCustomers(), s->true);
+        customerTable.setItems(customers);
+        
+    }
+    
+    @FXML
+    void searchBox(Event event) {
+        if(!search.getValueSafe().isEmpty()){
+            customers.setPredicate(s->s.getCustomerName().toUpperCase().contains(search.getValueSafe().toUpperCase()));
+        }else{
+            customers.setPredicate(s->true);
+        }
+    }
 
     @Override
     public String getScreenName() {

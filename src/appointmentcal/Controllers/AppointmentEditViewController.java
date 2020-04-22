@@ -102,7 +102,6 @@ public class AppointmentEditViewController extends BaseController implements Ini
         if (proceed) {
             manager.getCurrentAppointment().delete();
             manager.getAppointments().remove(manager.getCurrentAppointment());
-            manager.refreshAppointments();
             
             viewFactory.showAppointmentView();
             viewFactory.closeStage((Stage)customerCombo.getScene().getWindow());
